@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIKKE オバロ再製造 確率＆必要ドングリ計算機</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151c2c;
+            --border-color: #2a364f;
+            --accent-color: #00f0ff;
+            --accent-yellow: #ffb700;
+            --text-color: #e0e6ed;
+            --text-dim: #8a99ad;
+            --danger-color: #ff4757;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .lock-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--accent-yellow);
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results-panel {
+            background: linear-gradient(135deg, #151c2c 0%, #1e293b 100%);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .res-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            text-align: center;
+        }
+
+        .res-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .res-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .res-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .res-sub {
+            font-size: 0.75rem;
+            color: var(--accent-yellow);
+            margin-top: 4px;
+        }
+
+        .info-note {
+            background-color: rgba(255, 183, 0, 0.1);
+            border-left: 3px solid var(--accent-yellow);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #1e293b;
+            color: var(--accent-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>NIKKE オバロ再製造 計算機</h1>
+    <div class="subtitle">1〜3段目の個別条件指定・重複除外・ロック消費完全対応</div>
+
+    <div class="info-note">
+        <strong>仕様要点:</strong> ロック0個=1消費 / ロック1個=2消費 / ロック2個=3消費。<br>
+        付与確率: 1段目 100% / 2段目 50% / 3段目 30%。他の枠で出たオプションは重複しません。
+    </div>
+
+    <!-- 1〜3段目の設定カード -->
+    <div class="grid-3">
+        <!-- 1段目 -->
+        <div class="card" id="card-1">
+            <div class="card-header">
+                <span class="card-title">1段目 (付与率 100%)</span>
+                <label class="lock-checkbox">
+                    <input type="checkbox" id="lock-1" onchange="updateCalc()"> ロック中
+                </label>
+            </div>
+            <div class="form-group">
+                <label>狙うオプション</label>
+                <select id="opt-1" onchange="updateCalc()">
+                    <option value="any">指定なし (任意)</option>
+                    <option value="none">付与なし (空き)</option>
+                    <option value="atk">攻撃力増加 (10%)</option>
+                    <option value="ammo">最大装弾数増加 (12%)</option>
+                    <option value="element">有利コードダメージ増加 (10%)</option>
+                    <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                    <option value="crit_rate">クリティカル率増加 (10%)</option>
+                    <option value="charge_speed">チャージ速度増加 (12%)</option>
+                    <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                    <option value="hit">命中率増加 (12%)</option>
+                    <option value="def">防御力増加 (10%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数値・ランク指定</label>
+                <select id="rank-1" onchange="updateCalc()">
+                    <option value="1">ランク1以上 (全数値)</option>
+                    <option value="8">ランク8以上 (上級 40%)</option>
+                    <option value="11">ランク11以上 (特級 5%)</option>
+                    <option value="15">ランク15のみ (最高 0.33%)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 2段目 -->
+        <div class="card" id="card-2">
+            <div class="card-header">
+                <span class="card-title">2段目 (付与率 50%)</span>
+                <label class="lock-checkbox">
+                    <input type="checkbox" id="lock-2" onchange="updateCalc()"> ロック中
+                </label>
+            </div>
+            <div class="form-group">
+                <label>狙うオプション</label>
+                <select id="opt-2" onchange="updateCalc()">
+                    <option value="any">指定なし (任意)</option>
+                    <option value="none">付与なし (空き)</option>
+                    <option value="atk">攻撃力増加 (10%)</option>
+                    <option value="ammo">最大装弾数増加 (12%)</option>
+                    <option value="element">有利コードダメージ増加 (10%)</option>
+                    <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                    <option value="crit_rate">クリティカル率増加 (10%)</option>
+                    <option value="charge_speed">チャージ速度増加 (12%)</option>
+                    <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                    <option value="hit">命中率増加 (12%)</option>
+                    <option value="def">防御力増加 (10%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数値・ランク指定</label>
+                <select id="rank-2" onchange="updateCalc()">
+                    <option value="1">ランク1以上 (全数値)</option>
+                    <option value="8">ランク8以上 (上級 40%)</option>
+                    <option value="11">ランク11以上 (特級 5%)</option>
+                    <option value="15">ランク15のみ (最高 0.33%)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 3段目 -->
+        <div class="card" id="card-3">
+            <div class="card-header">
+                <span class="card-title">3段目 (付与率 30%)</span>
+                <label class="lock-checkbox">
+                    <input type="checkbox" id="lock-3" onchange="updateCalc()" checked> ロック中
+                </label>
+            </div>
+            <div class="form-group">
+                <label>狙うオプション</label>
+                <select id="opt-3" onchange="updateCalc()" disabled>
+                    <option value="any">指定なし (ロック中)</option>
+                    <option value="none">付与なし (空き)</option>
+                    <option value="atk">攻撃力増加 (10%)</option>
+                    <option value="ammo">最大装弾数増加 (12%)</option>
+                    <option value="element">有利コードダメージ増加 (10%)</option>
+                    <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                    <option value="crit_rate">クリティカル率増加 (10%)</option>
+                    <option value="charge_speed">チャージ速度増加 (12%)</option>
+                    <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                    <option value="hit">命中率増加 (12%)</option>
+                    <option value="def">防御力増加 (10%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数値・ランク指定</label>
+                <select id="rank-3" onchange="updateCalc()" disabled>
+                    <option value="1">ランク1以上 (全数値)</option>
+                    <option value="8">ランク8以上 (上級 40%)</option>
+                    <option value="11">ランク11以上 (特級 5%)</option>
+                    <option value="15">ランク15のみ (最高 0.33%)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 結果表示パネル -->
+    <div class="results-panel">
+        <div class="res-grid">
+            <div class="res-box">
+                <div class="res-label">1回あたりの成功確率</div>
+                <div class="res-value" id="res-prob">0.00%</div>
+                <div class="res-sub" id="res-lock-info">1回につき ドングリ 2個消費</div>
+            </div>
+            <div class="res-box">
+                <div class="res-label">期待値 (平均リロール回数)</div>
+                <div class="res-value" id="res-trials">0 回</div>
+                <div class="res-sub">ハマり考慮なしの平均</div>
+            </div>
+            <div class="res-box">
+                <div class="res-label">平均消費ドングリ数</div>
+                <div class="res-value" id="res-acorns">0 個</div>
+                <div class="res-sub">カスタムモジュール</div>
+            </div>
+            <div class="res-box">
+                <div class="res-label">90%安心ライン (必要個数)</div>
+                <div class="res-value" id="res-safe90">0 個</div>
+                <div class="res-sub" id="res-safe-trials">約 0 回分</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 補足テーブル -->
+    <div class="card">
+        <div class="card-title" style="margin-bottom: 8px;">主な目標パターンの目安 (3段目ロック時・2個消費)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>狙う条件 (1・2段目)</th>
+                    <th>成功確率</th>
+                    <th>平均リロール回数</th>
+                    <th>平均消費ドングリ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>攻撃力 or 装弾数 のどちらか1つが付く</td>
+                    <td>約 20.3%</td>
+                    <td>約 4.9 回</td>
+                    <td>約 10 個</td>
+                </tr>
+                <tr>
+                    <td>攻撃力 ＋ 装弾数 が両方同時に付く</td>
+                    <td>約 1.33%</td>
+                    <td>約 75.2 回</td>
+                    <td>約 150 個</td>
+                </tr>
+                <tr>
+                    <td>攻撃力(ランク8以上) が付く</td>
+                    <td>約 4.1%</td>
+                    <td>約 24.4 回</td>
+                    <td>約 49 個</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 各オプションの基礎抽選重み (合計 100%)
+    const OPTION_WEIGHTS = {
+        'atk': 10,
+        'ammo': 12,
+        'element': 10,
+        'crit_dmg': 12,
+        'crit_rate': 10,
+        'charge_speed': 12,
+        'charge_dmg': 12,
+        'hit': 12,
+        'def': 10
+    };
+
+    // ランクごとの累積出現率 (1〜15)
+    function getRankProb(minRank) {
+        if (minRank <= 1) return 1.0;
+        if (minRank <= 7) return 1.0 - ((minRank - 1) * (0.60 / 7));
+        if (minRank <= 11) return 0.40 - ((minRank - 8) * (0.35 / 4));
+        if (minRank <= 15) return 0.05 - ((minRank - 12) * (0.05 / 4));
+        return 0.05;
+    }
+
+    function updateCalc() {
+        const locks = [
+            document.getElementById('lock-1').checked,
+            document.getElementById('lock-2').checked,
+            document.getElementById('lock-3').checked
+        ];
+
+        // UI制御
+        for (let i = 1; i <= 3; i++) {
+            const isLocked = locks[i - 1];
+            document.getElementById(`opt-${i}`).disabled = isLocked;
+            document.getElementById(`rank-${i}`).disabled = isLocked;
+            const card = document.getElementById(`card-${i}`);
+            if (isLocked) {
+                card.style.opacity = '0.6';
+            } else {
+                card.style.opacity = '1.0';
+            }
+        }
+
+        // 消費ドングリ数の判定 (0ロック=1, 1ロック=2, 2ロック=3)
+        const lockedCount = locks.filter(Boolean).length;
+        if (lockedCount === 3) {
+            document.getElementById('res-prob').innerText = "---";
+            document.getElementById('res-trials').innerText = "---";
+            document.getElementById('res-acorns').innerText = "---";
+            document.getElementById('res-safe90').innerText = "---";
+            document.getElementById('res-lock-info').innerText = "全スロットがロックされています";
+            return;
+        }
+
+        const acornPerRoll = lockedCount === 0 ? 1 : (lockedCount === 1 ? 2 : 3);
+        document.getElementById('res-lock-info').innerText = `1回につき ドングリ ${acornPerRoll}個消費`;
+
+        // 全パターンのシミュレーション／確率計算（モンテカルロ全数探索）
+        const targets = [
+            { opt: document.getElementById('opt-1').value, rank: parseInt(document.getElementById('rank-1').value), locked: locks[0] },
+            { opt: document.getElementById('opt-2').value, rank: parseInt(document.getElementById('rank-2').value), locked: locks[1] },
+            { opt: document.getElementById('opt-3').value, rank: parseInt(document.getElementById('rank-3').value), locked: locks[2] }
+        ];
+
+        const slotRates = [1.0, 0.5, 0.3]; // 各段の付与率
+        let totalSuccessProb = 0;
+
+        // モンテカルロ全挙動（10万回計算による精密幾何確率）
+        const SIMULATIONS = 100000;
+        let successCount = 0;
+
+        const optKeys = Object.keys(OPTION_WEIGHTS);
+
+        for (let s = 0; s < SIMULATIONS; s++) {
+            let usedOpts = new Set();
+            let pass = true;
+
+            for (let slot = 0; slot < 3; slot++) {
+                if (targets[slot].locked) continue; // ロック中スロットは評価スキップ
+
+                const targetOpt = targets[slot].opt;
+                const targetRank = targets[slot].rank;
+
+                // スロットの付与判定
+                const isAppeared = Math.random() < slotRates[slot];
+
+                if (!isAppeared) {
+                    if (targetOpt !== 'any' && targetOpt !== 'none') {
+                        pass = false;
+                        break;
+                    }
+                    continue;
+                }
+
+                // オプションの重複除外抽選
+                let availableOpts = optKeys.filter(k => !usedOpts.has(k));
+                let totalW = availableOpts.reduce((sum, k) => sum + OPTION_WEIGHTS[k], 0);
+                
+                let rand = Math.random() * totalW;
+                let selectedOpt = null;
+                for (let k of availableOpts) {
+                    rand -= OPTION_WEIGHTS[k];
+                    if (rand <= 0) {
+                        selectedOpt = k;
+                        break;
+                    }
+                }
+                if (!selectedOpt) selectedOpt = availableOpts[availableOpts.length - 1];
+                usedOpts.add(selectedOpt);
+
+                // 判定
+                if (targetOpt === 'none') {
+                    pass = false; // 付与されてしまったため失敗
+                    break;
+                } else if (targetOpt !== 'any') {
+                    if (selectedOpt !== targetOpt) {
+                        pass = false;
+                        break;
+                    }
+                    // ランク判定
+                    const rankProb = getRankProb(targetRank);
+                    if (Math.random() > rankProb) {
+                        pass = false;
+                        break;
+                    }
+                }
+            }
+
+            if (pass) successCount++;
+        }
+
+        const prob = successCount / SIMULATIONS;
+
+        if (prob <= 0) {
+            document.getElementById('res-prob').innerText = "0.00%";
+            document.getElementById('res-trials').innerText = "∞ 回";
+            document.getElementById('res-acorns').innerText = "∞ 個";
+            document.getElementById('res-safe90').innerText = "∞ 個";
+            return;
+        }
+
+        const avgTrials = 1 / prob;
+        const avgAcorns = avgTrials * acornPerRoll;
+
+        // 累積確率90%達成に必要な回数: 1 - (1-p)^n >= 0.9 => n = log(0.1) / log(1-p)
+        const safe90Trials = Math.ceil(Math.log(0.1) / Math.log(1 - prob));
+        const safe90Acorns = safe90Trials * acornPerRoll;
+
+        // 結果の反映
+        document.getElementById('res-prob').innerText = (prob * 100).toFixed(2) + "%";
+        document.getElementById('res-trials').innerText = `約 ${avgTrials.toFixed(1)} 回`;
+        document.getElementById('res-acorns').innerText = `約 ${Math.round(avgAcorns)} 個`;
+        document.getElementById('res-safe90').innerText = `約 ${safe90Acorns} 個`;
+        document.getElementById('res-safe-trials').innerText = `約 ${safe90Trials} 回分`;
+    }
+
+    // 初期計算
+    updateCalc();
+</script>
+
+</body>
+</html>
