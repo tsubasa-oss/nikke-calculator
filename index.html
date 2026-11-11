@@ -348,13 +348,13 @@
                     <td>3段目ロック時：1・2段目のどちらかに「攻撃力」または「有利コード」が付く</td>
                     <td>約 20.3%</td>
                     <td>約 4.9 回</td>
-                    <td>約 10 個 (2個消費)[cite: 10]</td>
+                    <td>約 10 個 (2個消費)</td>
                 </tr>
                 <tr>
                     <td>3段目ロック時：1・2段目に「攻撃力 ＋ 装弾数」が両方同時に付く</td>
                     <td>約 1.33%</td>
                     <td>約 75.2 回</td>
-                    <td>約 150 個 (2個消費)[cite: 10]</td>
+                    <td>約 150 個 (2個消費)</td>
                 </tr>
                 <tr>
                     <td>3段目・2段目ロック時：1段目に「最大装弾数」が付く</td>
@@ -402,4 +402,129 @@
             const isLocked = locks[i - 1];
             document.getElementById(`opt-${i}`).disabled = isLocked;
             document.getElementById(`rank-${i}`).disabled = isLocked;
-            const card =
+            const card = document.getElementById(`card-${i}`);
+            if (isLocked) {
+                card.style.opacity = '0.6';
+            } else {
+                card.style.opacity = '1.0';
+            }
+        }
+
+        // 消費ドングリ数の判定 (0ロック=1, 1ロック=2, 2ロック=3)
+        const lockedCount = locks.filter(Boolean).length;
+        if (lockedCount === 3) {
+            document.getElementById('res-prob').innerText = "---";
+            document.getElementById('res-trials').innerText = "---";
+            document.getElementById('res-acorns').innerText = "---";
+            document.getElementById('res-safe90').innerText = "---";
+            document.getElementById('res-lock-info').innerText = "全スロットがロックされています";
+            return;
+        }
+
+        const acornPerRoll = lockedCount === 0 ? 1 : (lockedCount === 1 ? 2 : 3);
+        document.getElementById('res-lock-info').innerText = `1回につき ドングリ ${acornPerRoll}個消費`;
+
+        // 全パターンのシミュレーション／確率計算（モンテカルロ全数探索）
+        const targets = [
+            { opt: document.getElementById('opt-1').value, rank: parseInt(document.getElementById('rank-1').value), locked: locks[0] },
+            { opt: document.getElementById('opt-2').value, rank: parseInt(document.getElementById('rank-2').value), locked: locks[1] },
+            { opt: document.getElementById('opt-3').value, rank: parseInt(document.getElementById('rank-3').value), locked: locks[2] }
+        ];
+
+        const slotRates = [1.0, 0.5, 0.3]; // 各段の付与率
+
+        // モンテカルロ全挙動（10万回計算による精密幾何確率）
+        const SIMULATIONS = 100000;
+        let successCount = 0;
+
+        const optKeys = Object.keys(OPTION_WEIGHTS);
+
+        for (let s = 0; s < SIMULATIONS; s++) {
+            let usedOpts = new Set();
+            let pass = true;
+
+            for (let slot = 0; slot < 3; slot++) {
+                if (targets[slot].locked) continue; // ロック中スロットは評価スキップ
+
+                const targetOpt = targets[slot].opt;
+                const targetRank = targets[slot].rank;
+
+                // スロットの付与判定
+                const isAppeared = Math.random() < slotRates[slot];
+
+                if (!isAppeared) {
+                    if (targetOpt !== 'any' && targetOpt !== 'none') {
+                        pass = false;
+                        break;
+                    }
+                    continue;
+                }
+
+                // オプションの重複除外抽選
+                let availableOpts = optKeys.filter(k => !usedOpts.has(k));
+                let totalW = availableOpts.reduce((sum, k) => sum + OPTION_WEIGHTS[k], 0);
+                
+                let rand = Math.random() * totalW;
+                let selectedOpt = null;
+                for (let k of availableOpts) {
+                    rand -= OPTION_WEIGHTS[k];
+                    if (rand <= 0) {
+                        selectedOpt = k;
+                        break;
+                    }
+                }
+                if (!selectedOpt) selectedOpt = availableOpts[availableOpts.length - 1];
+                usedOpts.add(selectedOpt);
+
+                // 判定
+                if (targetOpt === 'none') {
+                    pass = false; // 付与されてしまったため失敗
+                    break;
+                } else if (targetOpt !== 'any') {
+                    if (selectedOpt !== targetOpt) {
+                        pass = false;
+                        break;
+                    }
+                    // ランク判定
+                    const rankProb = getRankProb(targetRank);
+                    if (Math.random() > rankProb) {
+                        pass = false;
+                        break;
+                    }
+                }
+            }
+
+            if (pass) successCount++;
+        }
+
+        const prob = successCount / SIMULATIONS;
+
+        if (prob <= 0) {
+            document.getElementById('res-prob').innerText = "0.00%";
+            document.getElementById('res-trials').innerText = "∞ 回";
+            document.getElementById('res-acorns').innerText = "∞ 個";
+            document.getElementById('res-safe90').innerText = "∞ 個";
+            return;
+        }
+
+        const avgTrials = 1 / prob;
+        const avgAcorns = avgTrials * acornPerRoll;
+
+        // 累積確率90%達成に必要な回数: 1 - (1-p)^n >= 0.9 => n = log(0.1) / log(1-p)
+        const safe90Trials = Math.ceil(Math.log(0.1) / Math.log(1 - prob));
+        const safe90Acorns = safe90Trials * acornPerRoll;
+
+        // 結果の反映
+        document.getElementById('res-prob').innerText = (prob * 100).toFixed(2) + "%";
+        document.getElementById('res-trials').innerText = `約 ${avgTrials.toFixed(1)} 回`;
+        document.getElementById('res-acorns').innerText = `約 ${Math.round(avgAcorns)} 個`;
+        document.getElementById('res-safe90').innerText = `約 ${safe90Acorns} 個`;
+        document.getElementById('res-safe-trials').innerText = `約 ${safe90Trials} 回分`;
+    }
+
+    // 初期計算
+    updateCalc();
+</script>
+
+</body>
+</html>
