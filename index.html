@@ -184,6 +184,26 @@
         tr:nth-child(even) {
             background-color: rgba(255, 255, 255, 0.02);
         }
+
+        /* 右下の制作者情報用スタイル */
+        .footer {
+            margin-top: 24px;
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: var(--accent-yellow);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -364,6 +384,11 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- 右下の制作者クレジット -->
+    <div class="footer">
+        作成者 X：<a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">@tsubasa_nikke</a>
     </div>
 </div>
 
