@@ -202,6 +202,26 @@
             background-color: rgba(255, 255, 255, 0.02);
         }
 
+        .calc-btn {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #0b0f19;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            margin-top: 4px;
+        }
+
+        .calc-btn:hover {
+            background-color: #00c2cc;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        /* 共通フッター（左側に切り替えボタン、右側に作成者リンクを配置） */
         .footer {
             margin-top: 24px;
             display: flex;
@@ -472,3 +492,321 @@
                     </div>
                 </div>
                 <table>
+                    <thead>
+                        <tr>
+                            <th>100連の獲得結果</th>
+                            <th>発生確率</th>
+                            <th>累積確率 (以上)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0体 (すり抜けのみ/爆死)</td><td>13.26%</td><td>100.00%</td></tr>
+                        <tr><td>1体 (無凸確保)</td><td>27.07%</td><td>86.74%</td></tr>
+                        <tr><td>2体 (1凸)</td><td>27.34%</td><td>59.67%</td></tr>
+                        <tr><td>3体以上 (2凸〜完凸)</td><td>32.33%</td><td>32.33%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ピルグリム・オーバースペックPU -->
+            <div class="card" style="border-color: var(--pilgrim-color);">
+                <div class="card-header">
+                    <span class="card-title pilgrim">ピルグリム / OS募集 (PU 1.0%)</span>
+                </div>
+                <div class="res-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <div class="res-box">
+                        <div class="res-label">1回あたりのPU確率</div>
+                        <div class="res-value pilgrim">1.00%</div>
+                        <div class="res-sub">すり抜け 3.00%</div>
+                    </div>
+                    <div class="res-box">
+                        <div class="res-label">1体引く期待値</div>
+                        <div class="res-value pilgrim">100 連</div>
+                        <div class="res-sub">90%安心ライン: 230連</div>
+                    </div>
+                    <div class="res-box">
+                        <div class="res-label">100連で1体以上引ける確率</div>
+                        <div class="res-value pilgrim">63.40%</div>
+                        <div class="res-sub">爆死率(0体): 36.60%</div>
+                    </div>
+                    <div class="res-box">
+                        <div class="res-label">100連での期待獲得数</div>
+                        <div class="res-value pilgrim">1.00 体</div>
+                        <div class="res-sub">SSR全体期待値: 4.0体</div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>100連の獲得結果</th>
+                            <th>発生確率</th>
+                            <th>累積確率 (以上)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>0体 (すり抜けのみ/爆死)</td><td>36.60%</td><td>100.00%</td></tr>
+                        <tr><td>1体 (無凸確保)</td><td>36.97%</td><td>63.40%</td></tr>
+                        <tr><td>2体 (1凸)</td><td>18.49%</td><td>26.42%</td></tr>
+                        <tr><td>3体以上 (2凸〜完凸)</td><td>7.94%</td><td>7.94%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="results-panel">
+            <div class="card-title" style="margin-bottom: 12px;">任意回数 期待度計算ツール</div>
+            <div class="grid-2" style="margin-bottom: 12px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>ガチャ種別 (PU排出率)</label>
+                    <select id="gacha-rate">
+                        <option value="0.02">一般キャラ 特殊募集 (PU 2.0%)</option>
+                        <option value="0.01">ピルグリム / オーバースペック募集 (PU 1.0%)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>回す回数 (連)</label>
+                    <input type="number" id="gacha-pulls" value="100" min="1" max="2000">
+                </div>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <button class="calc-btn" onclick="updateGachaCalc()">期待値を計算する</button>
+            </div>
+            <div class="res-grid">
+                <div class="res-box">
+                    <div class="res-label">1体以上引ける確率</div>
+                    <div class="res-value" id="gacha-res-1">86.74%</div>
+                    <div class="res-sub" id="gacha-res-0">0体(爆死)率: 13.26%</div>
+                </div>
+                <div class="res-box">
+                    <div class="res-label">2体以上引ける確率 (1凸〜)</div>
+                    <div class="res-value" id="gacha-res-2">59.67%</div>
+                    <div class="res-sub">素体＋1凸ライン</div>
+                </div>
+                <div class="res-box">
+                    <div class="res-label">4体以上引ける確率 (3凸完凸)</div>
+                    <div class="res-value" id="gacha-res-4">14.10%</div>
+                    <div class="res-sub">ロビー壁紙ライン</div>
+                </div>
+                <div class="res-box">
+                    <div class="res-label">期待獲得体数 ＆ マイレージ</div>
+                    <div class="res-value" id="gacha-res-exp">2.00 体</div>
+                    <div class="res-sub" id="gacha-res-mileage">金マイレージ +100枚</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 共通フッター（一番下左側に切り替えボタン、右側に作成者リンク） -->
+    <div class="footer">
+        <div>
+            <button id="toggle-page-btn" class="nav-btn" onclick="togglePage()">
+                📊 ガチャ確率を見る
+            </button>
+        </div>
+        <div>
+            作成者 X：<a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">@tsubasa_nikke</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let isGachaPage = false;
+
+    function togglePage() {
+        isGachaPage = !isGachaPage;
+        const pageOverload = document.getElementById('page-overload');
+        const pageGacha = document.getElementById('page-gacha');
+        const toggleBtn = document.getElementById('toggle-page-btn');
+
+        if (isGachaPage) {
+            pageOverload.classList.add('hidden');
+            pageGacha.classList.remove('hidden');
+            toggleBtn.innerHTML = '⬅️ オバロシミュレーターに戻る';
+        } else {
+            pageGacha.classList.add('hidden');
+            pageOverload.classList.remove('hidden');
+            toggleBtn.innerHTML = '📊 ガチャ確率を見る';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function comb(n, k) {
+        if (k < 0 || k > n) return 0;
+        if (k === 0 || k === n) return 1;
+        if (k > n / 2) k = n - k;
+        let res = 1;
+        for (let i = 1; i <= k; i++) {
+            res = res * (n - i + 1) / i;
+        }
+        return res;
+    }
+
+    function binomProb(n, k, p) {
+        return comb(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+    }
+
+    function updateGachaCalc() {
+        const p = parseFloat(document.getElementById('gacha-rate').value);
+        let n = parseInt(document.getElementById('gacha-pulls').value);
+        if (isNaN(n) || n < 1) n = 1;
+        if (n > 2000) n = 2000;
+
+        const p0 = Math.pow(1 - p, n);
+        const p1 = binomProb(n, 1, p);
+        const p2 = binomProb(n, 2, p);
+        const p3 = binomProb(n, 3, p);
+
+        const atLeast1 = Math.max(0, 1 - p0);
+        const atLeast2 = Math.max(0, 1 - (p0 + p1));
+        const atLeast4 = Math.max(0, 1 - (p0 + p1 + p2 + p3));
+        const expected = n * p;
+
+        document.getElementById('gacha-res-1').innerText = (atLeast1 * 100).toFixed(2) + "%";
+        document.getElementById('gacha-res-0').innerText = `0体(爆死)率: ${(p0 * 100).toFixed(2)}%`;
+        document.getElementById('gacha-res-2').innerText = (atLeast2 * 100).toFixed(2) + "%";
+        document.getElementById('gacha-res-4').innerText = (atLeast4 * 100).toFixed(2) + "%";
+        document.getElementById('gacha-res-exp').innerText = expected.toFixed(2) + " 体";
+        document.getElementById('gacha-res-mileage').innerText = `金マイレージ +${n}枚`;
+    }
+
+    const OPTION_WEIGHTS = {
+        'atk': 10,
+        'ammo': 12,
+        'element': 10,
+        'crit_dmg': 12,
+        'crit_rate': 10,
+        'charge_speed': 12,
+        'charge_dmg': 12,
+        'hit': 12,
+        'def': 10
+    };
+
+    function getRankProb(minRank) {
+        if (minRank <= 1) return 1.0;
+        if (minRank <= 7) return 1.0 - ((minRank - 1) * (0.60 / 7));
+        if (minRank <= 11) return 0.40 - ((minRank - 8) * (0.35 / 4));
+        if (minRank <= 15) return 0.05 - ((minRank - 12) * (0.05 / 4));
+        return 0.05;
+    }
+
+    function updateCalc() {
+        const locks = [
+            document.getElementById('lock-1').checked,
+            document.getElementById('lock-2').checked,
+            document.getElementById('lock-3').checked
+        ];
+
+        for (let i = 1; i <= 3; i++) {
+            const isLocked = locks[i - 1];
+            document.getElementById(`opt-${i}`).disabled = isLocked;
+            document.getElementById(`rank-${i}`).disabled = isLocked;
+            const card = document.getElementById(`card-${i}`);
+            card.style.opacity = isLocked ? '0.6' : '1.0';
+        }
+
+        const lockedCount = locks.filter(Boolean).length;
+        if (lockedCount === 3) {
+            document.getElementById('res-prob').innerText = "---";
+            document.getElementById('res-trials').innerText = "---";
+            document.getElementById('res-acorns').innerText = "---";
+            document.getElementById('res-safe90').innerText = "---";
+            document.getElementById('res-lock-info').innerText = "全スロットがロックされています";
+            return;
+        }
+
+        const acornPerRoll = lockedCount === 0 ? 1 : (lockedCount === 1 ? 2 : 3);
+        document.getElementById('res-lock-info').innerText = `1回につき ドングリ ${acornPerRoll}個消費`;
+
+        const targets = [
+            { opt: document.getElementById('opt-1').value, rank: parseInt(document.getElementById('rank-1').value), locked: locks[0] },
+            { opt: document.getElementById('opt-2').value, rank: parseInt(document.getElementById('rank-2').value), locked: locks[1] },
+            { opt: document.getElementById('opt-3').value, rank: parseInt(document.getElementById('rank-3').value), locked: locks[2] }
+        ];
+
+        const slotRates = [1.0, 0.5, 0.3];
+        const SIMULATIONS = 100000;
+        let successCount = 0;
+        const optKeys = Object.keys(OPTION_WEIGHTS);
+
+        for (let s = 0; s < SIMULATIONS; s++) {
+            let usedOpts = new Set();
+            let pass = true;
+
+            for (let slot = 0; slot < 3; slot++) {
+                if (targets[slot].locked) continue;
+
+                const targetOpt = targets[slot].opt;
+                const targetRank = targets[slot].rank;
+                const isAppeared = Math.random() < slotRates[slot];
+
+                if (!isAppeared) {
+                    if (targetOpt !== 'any' && targetOpt !== 'none') {
+                        pass = false;
+                        break;
+                    }
+                    continue;
+                }
+
+                let availableOpts = optKeys.filter(k => !usedOpts.has(k));
+                let totalW = availableOpts.reduce((sum, k) => sum + OPTION_WEIGHTS[k], 0);
+                
+                let rand = Math.random() * totalW;
+                let selectedOpt = null;
+                for (let k of availableOpts) {
+                    rand -= OPTION_WEIGHTS[k];
+                    if (rand <= 0) {
+                        selectedOpt = k;
+                        break;
+                    }
+                }
+                if (!selectedOpt) selectedOpt = availableOpts[availableOpts.length - 1];
+                usedOpts.add(selectedOpt);
+
+                if (targetOpt === 'none') {
+                    pass = false;
+                    break;
+                } else if (targetOpt !== 'any') {
+                    if (selectedOpt !== targetOpt) {
+                        pass = false;
+                        break;
+                    }
+                    const rankProb = getRankProb(targetRank);
+                    if (Math.random() > rankProb) {
+                        pass = false;
+                        break;
+                    }
+                }
+            }
+
+            if (pass) successCount++;
+        }
+
+        const prob = successCount / SIMULATIONS;
+
+        if (prob <= 0) {
+            document.getElementById('res-prob').innerText = "0.00%";
+            document.getElementById('res-trials').innerText = "∞ 回";
+            document.getElementById('res-acorns').innerText = "∞ 個";
+            document.getElementById('res-safe90').innerText = "∞ 個";
+            return;
+        }
+
+        const avgTrials = 1 / prob;
+        const avgAcorns = avgTrials * acornPerRoll;
+        const safe90Trials = Math.ceil(Math.log(0.1) / Math.log(1 - prob));
+        const safe90Acorns = safe90Trials * acornPerRoll;
+
+        document.getElementById('res-prob').innerText = (prob * 100).toFixed(2) + "%";
+        document.getElementById('res-trials').innerText = `約 ${avgTrials.toFixed(1)} 回`;
+        document.getElementById('res-acorns').innerText = `約 ${Math.round(avgAcorns)} 個`;
+        document.getElementById('res-safe90').innerText = `約 ${safe90Acorns} 個`;
+        document.getElementById('res-safe-trials').innerText = `約 ${safe90Trials} 回分`;
+    }
+
+    updateCalc();
+    updateGachaCalc();
+</script>
+
+</body>
+</html>
