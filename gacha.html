@@ -104,6 +104,26 @@
             font-size: 0.9rem;
         }
 
+        /* 計算実行ボタンのスタイル */
+        .calc-btn {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #0b0f19;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            margin-top: 4px;
+        }
+
+        .calc-btn:hover {
+            background-color: #00c2cc;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
         .results-panel {
             background: linear-gradient(135deg, #151c2c 0%, #1e293b 100%);
             border: 1px solid var(--accent-color);
@@ -268,80 +288,4 @@
                 <div class="res-box">
                     <div class="res-label">1回あたりのPU確率</div>
                     <div class="res-value pilgrim">1.00%</div>
-                    <div class="res-sub">すり抜け 3.00%</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">1体引く期待値</div>
-                    <div class="res-value pilgrim">100 連</div>
-                    <div class="res-sub">90%安心ライン: 230連</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">100連で1体以上引ける確率</div>
-                    <div class="res-value pilgrim">63.40%</div>
-                    <div class="res-sub">爆死率(0体): 36.60%</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">100連での期待獲得数</div>
-                    <div class="res-value pilgrim">1.00 体</div>
-                    <div class="res-sub">SSR全体期待値: 4.0体</div>
-                </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>100連の獲得結果</th>
-                        <th>発生確率</th>
-                        <th>累積確率 (以上)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>0体 (すり抜けのみ/爆死)</td><td>36.60%</td><td>100.00%</td></tr>
-                    <tr><td>1体 (無凸確保)</td><td>36.97%</td><td>63.40%</td></tr>
-                    <tr><td>2体 (1凸)</td><td>18.49%</td><td>26.42%</td></tr>
-                    <tr><td>3体以上 (2凸〜完凸)</td><td>7.94%</td><td>7.94%</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- 任意の回数シミュレーター -->
-    <div class="results-panel">
-        <div class="card-title" style="margin-bottom: 12px;">任意回数 期待度計算ツール</div>
-        <div class="grid-2" style="margin-bottom: 16px;">
-            <div class="form-group" style="margin-bottom: 0;">
-                <label>ガチャ種別 (PU排出率)</label>
-                <select id="gacha-rate" onchange="updateGachaCalc()">
-                    <option value="0.02">一般キャラ 特殊募集 (PU 2.0%)</option>
-                    <option value="0.01">ピルグリム / オーバースペック募集 (PU 1.0%)</option>
-                </select>
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label>回す回数 (連)</label>
-                <input type="number" id="gacha-pulls" value="100" min="1" max="2000" oninput="updateGachaCalc()">
-            </div>
-        </div>
-        <div class="res-grid">
-            <div class="res-box">
-                <div class="res-label">1体以上引ける確率</div>
-                <div class="res-value" id="gacha-res-1">86.74%</div>
-                <div class="res-sub" id="gacha-res-0">0体(爆死)率: 13.26%</div>
-            </div>
-            <div class="res-box">
-                <div class="res-label">2体以上引ける確率 (1凸〜)</div>
-                <div class="res-value" id="gacha-res-2">59.67%</div>
-                <div class="res-sub">素体＋1凸ライン</div>
-            </div>
-            <div class="res-box">
-                <div class="res-label">4体以上引ける確率 (3凸完凸)</div>
-                <div class="res-value" id="gacha-res-4">14.10%</div>
-                <div class="res-sub">ロビー壁紙ライン</div>
-            </div>
-            <div class="res-box">
-                <div class="res-label">期待獲得体数 ＆ マイレージ</div>
-                <div class="res-value" id="gacha-res-exp">2.00 体</div>
-                <div class="res-sub" id="gacha-res-mileage">金マイレージ +100枚</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- フッター -->
+                    <div class="res-sub">
