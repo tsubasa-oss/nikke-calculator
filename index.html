@@ -71,6 +71,7 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 16px;
+            margin-bottom: 24px;
         }
 
         .card-header {
@@ -119,11 +120,6 @@
             border-radius: 4px;
             color: var(--text-color);
             font-size: 0.9rem;
-        }
-
-        select:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         .results-panel {
@@ -202,25 +198,6 @@
             background-color: rgba(255, 255, 255, 0.02);
         }
 
-        .calc-btn {
-            width: 100%;
-            background-color: var(--accent-color);
-            color: #0b0f19;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s;
-            margin-top: 4px;
-        }
-
-        .calc-btn:hover {
-            background-color: #00c2cc;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-        }
-
         .footer {
             margin-top: 24px;
             display: flex;
@@ -230,7 +207,8 @@
             gap: 12px;
             font-size: 0.85rem;
             color: var(--text-dim);
-            padding-bottom: 10px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
         }
 
         .footer a {
@@ -238,32 +216,12 @@
             text-decoration: none;
             font-weight: bold;
             transition: color 0.2s;
+            cursor: pointer;
         }
 
         .footer a:hover {
             color: var(--accent-yellow);
             text-decoration: underline;
-        }
-
-        .nav-btn {
-            background-color: #1e293b;
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-btn:hover {
-            background-color: var(--accent-color);
-            color: #0b0f19;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
         }
 
         .hidden {
@@ -287,7 +245,7 @@
 
         <div class="grid-3">
             <!-- 1段目 -->
-            <div class="card" id="card-1">
+            <div class="card" id="card-1" style="margin-bottom:0;">
                 <div class="card-header">
                     <span class="card-title">1段目 (付与率 100%)</span>
                     <label class="lock-checkbox">
@@ -310,7 +268,7 @@
                         <option value="def">防御力増加 (10%)</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom:0;">
                     <label>数値・ランク指定</label>
                     <select id="rank-1" onchange="updateCalc()">
                         <option value="1">ランク1以上 (全数値)</option>
@@ -322,7 +280,7 @@
             </div>
 
             <!-- 2段目 -->
-            <div class="card" id="card-2">
+            <div class="card" id="card-2" style="margin-bottom:0;">
                 <div class="card-header">
                     <span class="card-title">2段目 (付与率 50%)</span>
                     <label class="lock-checkbox">
@@ -345,7 +303,7 @@
                         <option value="def">防御力増加 (10%)</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom:0;">
                     <label>数値・ランク指定</label>
                     <select id="rank-2" onchange="updateCalc()">
                         <option value="1">ランク1以上 (全数値)</option>
@@ -357,7 +315,7 @@
             </div>
 
             <!-- 3段目 -->
-            <div class="card" id="card-3">
+            <div class="card" id="card-3" style="margin-bottom:0;">
                 <div class="card-header">
                     <span class="card-title">3段目 (付与率 30%)</span>
                     <label class="lock-checkbox">
@@ -380,7 +338,7 @@
                         <option value="def">防御力増加 (10%)</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom:0;">
                     <label>数値・ランク指定</label>
                     <select id="rank-3" onchange="updateCalc()">
                         <option value="1">ランク1以上 (全数値)</option>
@@ -466,3 +424,149 @@
             <!-- 一般キャラPU -->
             <div class="card" style="border-color: var(--accent-color);">
                 <div class="card-header">
+                    <span class="card-title">一般ピックアップ (排出率 2.0%)</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px;">通常PUキャラクターの確率シミュレーション</p>
+                <table>
+                    <tr><th>試行回数</th><th>1枚以上引く確率</th><th>平均獲得数</th></tr>
+                    <tr><td>10連</td><td>約 18.3%</td><td>0.20枚</td></tr>
+                    <tr><td>50連</td><td>約 63.6%</td><td>1.00枚</td></tr>
+                    <tr><td>100連</td><td>約 86.8%</td><td>2.00枚</td></tr>
+                    <tr><td>200連 (天井)</td><td>約 98.2%</td><td>4.00枚</td></tr>
+                </table>
+            </div>
+
+            <!-- ピルグリムPU -->
+            <div class="card" style="border-color: var(--pilgrim-color);">
+                <div class="card-header">
+                    <span class="card-title pilgrim">ピルグリム / アニバPU (排出率 1.0%)</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px;">ピルグリム等の低確率PUキャラクター</p>
+                <table>
+                    <tr><th>試行回数</th><th>1枚以上引く確率</th><th>平均獲得数</th></tr>
+                    <tr><td>10連</td><td>約 9.6%</td><td>0.10枚</td></tr>
+                    <tr><td>50連</td><td>約 39.5%</td><td>0.50枚</td></tr>
+                    <tr><td>100連</td><td>約 63.4%</td><td>1.00枚</td></tr>
+                    <tr><td>200連 (天井)</td><td>約 86.6%</td><td>2.00枚</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>
+                <a onclick="switchPage('overload')">⬅️ オバロシミュレーターに戻る</a>
+            </div>
+            <div>
+                <a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">X (旧Twitter) ➔</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- オバロシミュレーター画面の最下部フッター（左：ガチャ計算機へのリンク、右：Xへのリンク） -->
+    <div class="footer" id="overload-footer">
+        <div>
+            <a onclick="switchPage('gacha')">ガチャ確率計算機へ移動 ➔</a>
+        </div>
+        <div>
+            <a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">X (旧Twitter) ➔</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function switchPage(page) {
+        const pageOverload = document.getElementById('page-overload');
+        const pageGacha = document.getElementById('page-gacha');
+        const overloadFooter = document.getElementById('overload-footer');
+        
+        if (page === 'gacha') {
+            pageOverload.classList.add('hidden');
+            pageGacha.classList.remove('hidden');
+            overloadFooter.classList.add('hidden');
+        } else {
+            pageGacha.classList.add('hidden');
+            pageOverload.classList.remove('hidden');
+            overloadFooter.classList.remove('hidden');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateCalc() {
+        const lock1 = document.getElementById('lock-1').checked;
+        const lock2 = document.getElementById('lock-2').checked;
+        const lock3 = document.getElementById('lock-3').checked;
+
+        const opt1 = document.getElementById('opt-1').value;
+        const opt2 = document.getElementById('opt-2').value;
+        const opt3 = document.getElementById('opt-3').value;
+
+        const rank1 = parseInt(document.getElementById('rank-1').value);
+        const rank2 = parseInt(document.getElementById('rank-2').value);
+        const rank3 = parseInt(document.getElementById('rank-3').value);
+
+        let lockCount = (lock1 ? 1 : 0) + (lock2 ? 1 : 0) + (lock3 ? 1 : 0);
+        let costPerRoll = lockCount === 0 ? 1 : lockCount + 1;
+
+        document.getElementById('res-lock-info').innerText = `1回につき ドングリ ${costPerRoll}個消費 (ロック${lockCount}個)`;
+
+        function getRankMultiplier(rankVal) {
+            if (rankVal === 8) return 0.4;
+            if (rankVal === 11) return 0.05;
+            if (rankVal === 15) return 1 / 300;
+            return 1.0;
+        }
+
+        const totalOptions = 9;
+        let prob = 1.0;
+
+        if (!lock1) {
+            let optProb = 1.0;
+            if (opt1 === 'none') optProb = 1 / (totalOptions + 1);
+            else if (opt1 !== 'any') optProb = 1 / totalOptions;
+            optProb *= getRankMultiplier(rank1);
+            prob *= optProb;
+        }
+
+        if (!lock2) {
+            let p2 = 0.5;
+            if (opt2 === 'none') {
+                p2 *= 1 / (totalOptions + 1);
+            } else if (opt2 !== 'any') {
+                p2 *= 1 / (totalOptions - 1);
+            }
+            p2 *= getRankMultiplier(rank2);
+            prob *= p2;
+        }
+
+        if (!lock3) {
+            let p3 = 0.3;
+            if (opt3 === 'none') {
+                p3 *= 1 / (totalOptions + 1);
+            } else if (opt3 !== 'any') {
+                p3 *= 1 / (totalOptions - 2);
+            }
+            p3 *= getRankMultiplier(rank3);
+            prob *= p3;
+        }
+
+        if (prob <= 0) prob = 0.0000001;
+
+        let percentage = prob * 100;
+        let trials = prob > 0 ? Math.round(1 / prob) : 0;
+        let avgAcorns = Math.round(trials * costPerRoll);
+        let safe90Trials = Math.round(Math.log(1 - 0.90) / Math.log(1 - prob));
+        let safe90Acorns = safe90Trials * costPerRoll;
+
+        document.getElementById('res-prob').innerText = percentage < 0.01 ? percentage.toFixed(4) + '%' : percentage.toFixed(2) + '%';
+        document.getElementById('res-trials').innerText = trials.toLocaleString() + ' 回';
+        document.getElementById('res-acorns').innerText = avgAcorns.toLocaleString() + ' 個';
+        document.getElementById('res-safe90').innerText = safe90Acorns.toLocaleString() + ' 個';
+        document.getElementById('res-safe-trials').innerText = `約 ${safe90Trials.toLocaleString()} 回分`;
+    }
+
+    updateCalc();
+</script>
+
+</body>
+</html>
