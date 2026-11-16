@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIKKE オバロシミュレーター ＆ ガチャ確率計算機</title>
+    <title>NIKKE オバロ再製造 確率＆必要ドングリ計算機</title>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -14,7 +14,6 @@
             --text-color: #e0e6ed;
             --text-dim: #8a99ad;
             --danger-color: #ff4757;
-            --pilgrim-color: #ff6b81;
         }
 
         * {
@@ -59,19 +58,11 @@
             margin-bottom: 24px;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 16px;
-            margin-bottom: 24px;
         }
 
         .card-header {
@@ -86,10 +77,6 @@
         .card-title {
             font-weight: bold;
             color: var(--accent-color);
-        }
-
-        .card-title.pilgrim {
-            color: var(--pilgrim-color);
         }
 
         .lock-checkbox {
@@ -112,7 +99,7 @@
             margin-bottom: 4px;
         }
 
-        select, input[type="number"] {
+        select {
             width: 100%;
             padding: 8px;
             background-color: #0b0f19;
@@ -120,6 +107,11 @@
             border-radius: 4px;
             color: var(--text-color);
             font-size: 0.9rem;
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .results-panel {
@@ -155,10 +147,6 @@
             color: var(--accent-color);
         }
 
-        .res-value.pilgrim {
-            color: var(--pilgrim-color);
-        }
-
         .res-sub {
             font-size: 0.75rem;
             color: var(--accent-yellow);
@@ -173,13 +161,12 @@
             color: #d1d5db;
             margin-bottom: 20px;
             border-radius: 0 4px 4px 0;
-            line-height: 1.5;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             margin-top: 10px;
         }
 
@@ -198,17 +185,12 @@
             background-color: rgba(255, 255, 255, 0.02);
         }
 
+        /* 右下の制作者情報用スタイル */
         .footer {
             margin-top: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
+            text-align: right;
             font-size: 0.85rem;
             color: var(--text-dim);
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
         }
 
         .footer a {
@@ -216,355 +198,356 @@
             text-decoration: none;
             font-weight: bold;
             transition: color 0.2s;
-            cursor: pointer;
         }
 
         .footer a:hover {
             color: var(--accent-yellow);
             text-decoration: underline;
         }
-
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <h1>NIKKE オバロシミュレーター</h1>
+    <div class="subtitle">1〜3段目の個別条件指定・重複除外・ロック消費対応</div>
 
-    <!-- ページ1: オバロシミュレーター -->
-    <div id="page-overload">
-        <h1>NIKKE オバロシミュレーター</h1>
-        <div class="subtitle">1〜3段目の個別条件指定・重複除外・ロック消費対応</div>
-
-        <div class="info-note">
-            <strong>仕様要点:</strong> ロック0個=1消費 / ロック1個=2消費 / ロック2個=3消費。<br>
-            付与確率: 1段目 100% / 2段目 50% / 3段目 30%。他の枠で出たオプションは重複しません。
-        </div>
-
-        <div class="grid-3">
-            <!-- 1段目 -->
-            <div class="card" id="card-1" style="margin-bottom:0;">
-                <div class="card-header">
-                    <span class="card-title">1段目 (付与率 100%)</span>
-                    <label class="lock-checkbox">
-                        <input type="checkbox" id="lock-1" onchange="updateCalc()"> ロック中
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>狙うオプション</label>
-                    <select id="opt-1" onchange="updateCalc()">
-                        <option value="any">指定なし (任意)</option>
-                        <option value="none">付与なし (空き)</option>
-                        <option value="atk">攻撃力増加 (10%)</option>
-                        <option value="ammo">最大装弾数増加 (12%)</option>
-                        <option value="element">有利コードダメージ増加 (10%)</option>
-                        <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
-                        <option value="crit_rate">クリティカル率増加 (10%)</option>
-                        <option value="charge_speed">チャージ速度増加 (12%)</option>
-                        <option value="charge_dmg">チャージダメージ増加 (12%)</option>
-                        <option value="hit">命中率増加 (12%)</option>
-                        <option value="def">防御力増加 (10%)</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>数値・ランク指定</label>
-                    <select id="rank-1" onchange="updateCalc()">
-                        <option value="1">ランク1以上 (全数値)</option>
-                        <option value="8">ランク8以上 (上級 40%)</option>
-                        <option value="11">ランク11以上 (特級 5%)</option>
-                        <option value="15">ランク15のみ (最高 0.33%)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- 2段目 -->
-            <div class="card" id="card-2" style="margin-bottom:0;">
-                <div class="card-header">
-                    <span class="card-title">2段目 (付与率 50%)</span>
-                    <label class="lock-checkbox">
-                        <input type="checkbox" id="lock-2" onchange="updateCalc()"> ロック中
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>狙うオプション</label>
-                    <select id="opt-2" onchange="updateCalc()">
-                        <option value="any">指定なし (任意)</option>
-                        <option value="none">付与なし (空き)</option>
-                        <option value="atk">攻撃力増加 (10%)</option>
-                        <option value="ammo">最大装弾数増加 (12%)</option>
-                        <option value="element">有利コードダメージ増加 (10%)</option>
-                        <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
-                        <option value="crit_rate">クリティカル率増加 (10%)</option>
-                        <option value="charge_speed">チャージ速度増加 (12%)</option>
-                        <option value="charge_dmg">チャージダメージ増加 (12%)</option>
-                        <option value="hit">命中率増加 (12%)</option>
-                        <option value="def">防御力増加 (10%)</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>数値・ランク指定</label>
-                    <select id="rank-2" onchange="updateCalc()">
-                        <option value="1">ランク1以上 (全数値)</option>
-                        <option value="8">ランク8以上 (上級 40%)</option>
-                        <option value="11">ランク11以上 (特級 5%)</option>
-                        <option value="15">ランク15のみ (最高 0.33%)</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- 3段目 -->
-            <div class="card" id="card-3" style="margin-bottom:0;">
-                <div class="card-header">
-                    <span class="card-title">3段目 (付与率 30%)</span>
-                    <label class="lock-checkbox">
-                        <input type="checkbox" id="lock-3" onchange="updateCalc()"> ロック中
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>狙うオプション</label>
-                    <select id="opt-3" onchange="updateCalc()">
-                        <option value="any">指定なし (任意)</option>
-                        <option value="none">付与なし (空き)</option>
-                        <option value="atk">攻撃力増加 (10%)</option>
-                        <option value="ammo">最大装弾数増加 (12%)</option>
-                        <option value="element">有利コードダメージ増加 (10%)</option>
-                        <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
-                        <option value="crit_rate">クリティカル率増加 (10%)</option>
-                        <option value="charge_speed">チャージ速度増加 (12%)</option>
-                        <option value="charge_dmg">チャージダメージ増加 (12%)</option>
-                        <option value="hit">命中率増加 (12%)</option>
-                        <option value="def">防御力増加 (10%)</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>数値・ランク指定</label>
-                    <select id="rank-3" onchange="updateCalc()">
-                        <option value="1">ランク1以上 (全数値)</option>
-                        <option value="8">ランク8以上 (上級 40%)</option>
-                        <option value="11">ランク11以上 (特級 5%)</option>
-                        <option value="15">ランク15のみ (最高 0.33%)</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="results-panel">
-            <div class="res-grid">
-                <div class="res-box">
-                    <div class="res-label">1回あたりの成功確率</div>
-                    <div class="res-value" id="res-prob">0.00%</div>
-                    <div class="res-sub" id="res-lock-info">1回につき ドングリ 1個消費</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">期待値 (平均リロール回数)</div>
-                    <div class="res-value" id="res-trials">0 回</div>
-                    <div class="res-sub">ハマり考慮なしの平均</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">平均消費ドングリ数</div>
-                    <div class="res-value" id="res-acorns">0 個</div>
-                    <div class="res-sub">カスタムモジュール</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">90%安心ライン (必要個数)</div>
-                    <div class="res-value" id="res-safe90">0 個</div>
-                    <div class="res-sub" id="res-safe-trials">約 0 回分</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title" style="margin-bottom: 8px;">主な目標パターンの目安</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>狙う条件パターン</th>
-                        <th>成功確率</th>
-                        <th>平均リロール回数</th>
-                        <th>平均消費ドングリ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>3段目ロック時：1・2段目のどちらかに「攻撃力」または「有利コード」が付く</td>
-                        <td>約 20.3%</td>
-                        <td>約 4.9 回</td>
-                        <td>約 10 個 (2個消費)</td>
-                    </tr>
-                    <tr>
-                        <td>3段目ロック時：1・2段目に「攻撃力 ＋ 装弾数」が両方同時に付く</td>
-                        <td>約 1.33%</td>
-                        <td>約 75.2 回</td>
-                        <td>約 150 個 (2個消費)</td>
-                    </tr>
-                    <tr>
-                        <td>3段目・2段目ロック時：1段目に「最大装弾数」が付く</td>
-                        <td>約 12.0%</td>
-                        <td>約 8.3 回</td>
-                        <td>約 25 個 (3個消費)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="info-note">
+        <strong>仕様要点:</strong> ロック0個=1消費 / ロック1個=2消費 / ロック2個=3消費。<br>
+        付与確率: 1段目 100% / 2段目 50% / 3段目 30%。他の枠で出たオプションは重複しません。
     </div>
 
-    <!-- ページ2: ガチャ確率・期待値まとめ -->
-    <div id="page-gacha" class="hidden">
-        <h1>NIKKE ガチャ確率 ＆ 100連期待度まとめ</h1>
-        <div class="subtitle">一般PU（2%）とピルグリムPU（1%）の排出率・期待値比較</div>
-
-        <div class="info-note">
-            <strong>基本仕様:</strong> 特殊募集のSSR全体確率は <strong>4%</strong>（R: 53% / SR: 43%）。<br>
-            1回引くごとに<strong>ゴールドマイレージチケット1枚</strong>獲得（200枚で対象PUと直接交換可能・持ち越し可）。
-        </div>
-
-        <div class="grid-2">
-            <!-- 一般キャラPU -->
-            <div class="card" style="border-color: var(--accent-color);">
-                <div class="card-header">
-                    <span class="card-title">一般ピックアップ (排出率 2.0%)</span>
-                </div>
-                <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px;">通常PUキャラクターの確率シミュレーション</p>
-                <table>
-                    <tr><th>試行回数</th><th>1枚以上引く確率</th><th>平均獲得数</th></tr>
-                    <tr><td>10連</td><td>約 18.3%</td><td>0.20枚</td></tr>
-                    <tr><td>50連</td><td>約 63.6%</td><td>1.00枚</td></tr>
-                    <tr><td>100連</td><td>約 86.8%</td><td>2.00枚</td></tr>
-                    <tr><td>200連 (天井)</td><td>約 98.2%</td><td>4.00枚</td></tr>
-                </table>
+    <!-- 1〜3段目の設定カード -->
+    <div class="grid-3">
+        <!-- 1段目 -->
+        <div class="card" id="card-1">
+            <div class="card-header">
+                <span class="card-title">1段目 (付与率 100%)</span>
+                <label class="lock-checkbox">
+                    <input type="checkbox" id="lock-1" onchange="updateCalc()"> ロック中
+                </label>
             </div>
-
-            <!-- ピルグリムPU -->
-            <div class="card" style="border-color: var(--pilgrim-color);">
-                <div class="card-header">
-                    <span class="card-title pilgrim">ピルグリム / アニバPU (排出率 1.0%)</span>
-                </div>
-                <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px;">ピルグリム等の低確率PUキャラクター</p>
-                <table>
-                    <tr><th>試行回数</th><th>1枚以上引く確率</th><th>平均獲得数</th></tr>
-                    <tr><td>10連</td><td>約 9.6%</td><td>0.10枚</td></tr>
-                    <tr><td>50連</td><td>約 39.5%</td><td>0.50枚</td></tr>
-                    <tr><td>100連</td><td>約 63.4%</td><td>1.00枚</td></tr>
-                    <tr><td>200連 (天井)</td><td>約 86.6%</td><td>2.00枚</td></tr>
-                </table>
+            <div class="form-group">
+                <label>狙うオプション</label>
+                <select id="opt-1" onchange="updateCalc()">
+                    <option value="any">指定なし (任意)</option>
+                    <option value="none">付与なし (空き)</option>
+                    <option value="atk">攻撃力増加 (10%)</option>
+                    <option value="ammo">最大装弾数増加 (12%)</option>
+                    <option value="element">有利コードダメージ増加 (10%)</option>
+                    <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                    <option value="crit_rate">クリティカル率増加 (10%)</option>
+                    <option value="charge_speed">チャージ速度増加 (12%)</option>
+                    <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                    <option value="hit">命中率増加 (12%)</option>
+                    <option value="def">防御力増加 (10%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数値・ランク指定</label>
+                <select id="rank-1" onchange="updateCalc()">
+                    <option value="1">ランク1以上 (全数値)</option>
+                    <option value="8">ランク8以上 (上級 40%)</option>
+                    <option value="11">ランク11以上 (特級 5%)</option>
+                    <option value="15">ランク15のみ (最高 0.33%)</option>
+                </select>
             </div>
         </div>
 
-        <div class="footer">
-            <div>
-                <a onclick="switchPage('overload')">⬅️ オバロシミュレーターに戻る</a>
+        <!-- 2段目 -->
+        <div class="card" id="card-2">
+            <div class="card-header">
+                <span class="card-title">2段目 (付与率 50%)</span>
+                <label class="lock-checkbox">
+                    <input type="checkbox" id="lock-2" onchange="updateCalc()"> ロック中
+                </label>
             </div>
-            <div>
-                <a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">X (旧Twitter) ➔</a>
+            <div class="form-group">
+                <label>狙うオプション</label>
+                <select id="opt-2" onchange="updateCalc()">
+                    <option value="any">指定なし (任意)</option>
+                    <option value="none">付与なし (空き)</option>
+                    <option value="atk">攻撃力増加 (10%)</option>
+                    <option value="ammo">最大装弾数増加 (12%)</option>
+                    <option value="element">有利コードダメージ増加 (10%)</option>
+                    <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                    <option value="crit_rate">クリティカル率増加 (10%)</option>
+                    <option value="charge_speed">チャージ速度増加 (12%)</option>
+                    <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                    <option value="hit">命中率増加 (12%)</option>
+                    <option value="def">防御力増加 (10%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数値・ランク指定</label>
+                <select id="rank-2" onchange="updateCalc()">
+                    <option value="1">ランク1以上 (全数値)</option>
+                    <option value="8">ランク8以上 (上級 40%)</option>
+                    <option value="11">ランク11以上 (特級 5%)</option>
+                    <option value="15">ランク15のみ (最高 0.33%)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 3段目 -->
+        <div class="card" id="card-3">
+            <div class="card-header">
+                <span class="card-title">3段目 (付与率 30%)</span>
+                <label class="lock-checkbox">
+                    <input type="checkbox" id="lock-3" onchange="updateCalc()"> ロック中
+                </label>
+            </div>
+            <div class="form-group">
+                <label>狙うオプション</label>
+                <select id="opt-3" onchange="updateCalc()">
+                    <option value="any">指定なし (任意)</option>
+                    <option value="none">付与なし (空き)</option>
+                    <option value="atk">攻撃力増加 (10%)</option>
+                    <option value="ammo">最大装弾数増加 (12%)</option>
+                    <option value="element">有利コードダメージ増加 (10%)</option>
+                    <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                    <option value="crit_rate">クリティカル率増加 (10%)</option>
+                    <option value="charge_speed">チャージ速度増加 (12%)</option>
+                    <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                    <option value="hit">命中率増加 (12%)</option>
+                    <option value="def">防御力増加 (10%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数値・ランク指定</label>
+                <select id="rank-3" onchange="updateCalc()">
+                    <option value="1">ランク1以上 (全数値)</option>
+                    <option value="8">ランク8以上 (上級 40%)</option>
+                    <option value="11">ランク11以上 (特級 5%)</option>
+                    <option value="15">ランク15のみ (最高 0.33%)</option>
+                </select>
             </div>
         </div>
     </div>
 
-    <!-- オバロシミュレーター画面の最下部フッター（左：ガチャ計算機へのリンク、右：Xへのリンク） -->
-    <div class="footer" id="overload-footer">
-        <div>
-            <a onclick="switchPage('gacha')">ガチャ確率計算機へ移動 ➔</a>
-        </div>
-        <div>
-            <a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">X (旧Twitter) ➔</a>
+    <!-- 結果表示パネル -->
+    <div class="results-panel">
+        <div class="res-grid">
+            <div class="res-box">
+                <div class="res-label">1回あたりの成功確率</div>
+                <div class="res-value" id="res-prob">0.00%</div>
+                <div class="res-sub" id="res-lock-info">1回につき ドングリ 1個消費</div>
+            </div>
+            <div class="res-box">
+                <div class="res-label">期待値 (平均リロール回数)</div>
+                <div class="res-value" id="res-trials">0 回</div>
+                <div class="res-sub">ハマり考慮なしの平均</div>
+            </div>
+            <div class="res-box">
+                <div class="res-label">平均消費ドングリ数</div>
+                <div class="res-value" id="res-acorns">0 個</div>
+                <div class="res-sub">カスタムモジュール</div>
+            </div>
+            <div class="res-box">
+                <div class="res-label">90%安心ライン (必要個数)</div>
+                <div class="res-value" id="res-safe90">0 個</div>
+                <div class="res-sub" id="res-safe-trials">約 0 回分</div>
+            </div>
         </div>
     </div>
 
+    <!-- 補足テーブル -->
+    <div class="card">
+        <div class="card-title" style="margin-bottom: 8px;">主な目標パターンの目安</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>狙う条件パターン</th>
+                    <th>成功確率</th>
+                    <th>平均リロール回数</th>
+                    <th>平均消費ドングリ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>3段目ロック時：1・2段目のどちらかに「攻撃力」または「有利コード」が付く</td>
+                    <td>約 20.3%</td>
+                    <td>約 4.9 回</td>
+                    <td>約 10 個 (2個消費)</td>
+                </tr>
+                <tr>
+                    <td>3段目ロック時：1・2段目に「攻撃力 ＋ 装弾数」が両方同時に付く</td>
+                    <td>約 1.33%</td>
+                    <td>約 75.2 回</td>
+                    <td>約 150 個 (2個消費)</td>
+                </tr>
+                <tr>
+                    <td>3段目・2段目ロック時：1段目に「最大装弾数」が付く</td>
+                    <td>約 12.0%</td>
+                    <td>約 8.3 回</td>
+                    <td>約 25 個 (3個消費)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 右下の制作者クレジット -->
+    <div class="footer">
+        作成者 X：<a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">@tsubasa_nikke</a>
+    </div>
 </div>
 
 <script>
-    function switchPage(page) {
-        const pageOverload = document.getElementById('page-overload');
-        const pageGacha = document.getElementById('page-gacha');
-        const overloadFooter = document.getElementById('overload-footer');
-        
-        if (page === 'gacha') {
-            pageOverload.classList.add('hidden');
-            pageGacha.classList.remove('hidden');
-            overloadFooter.classList.add('hidden');
-        } else {
-            pageGacha.classList.add('hidden');
-            pageOverload.classList.remove('hidden');
-            overloadFooter.classList.remove('hidden');
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 各オプションの基礎抽選重み (合計 100%)
+    const OPTION_WEIGHTS = {
+        'atk': 10,
+        'ammo': 12,
+        'element': 10,
+        'crit_dmg': 12,
+        'crit_rate': 10,
+        'charge_speed': 12,
+        'charge_dmg': 12,
+        'hit': 12,
+        'def': 10
+    };
+
+    // ランクごとの累積出現率 (1〜15)
+    function getRankProb(minRank) {
+        if (minRank <= 1) return 1.0;
+        if (minRank <= 7) return 1.0 - ((minRank - 1) * (0.60 / 7));
+        if (minRank <= 11) return 0.40 - ((minRank - 8) * (0.35 / 4));
+        if (minRank <= 15) return 0.05 - ((minRank - 12) * (0.05 / 4));
+        return 0.05;
     }
 
     function updateCalc() {
-        const lock1 = document.getElementById('lock-1').checked;
-        const lock2 = document.getElementById('lock-2').checked;
-        const lock3 = document.getElementById('lock-3').checked;
+        const locks = [
+            document.getElementById('lock-1').checked,
+            document.getElementById('lock-2').checked,
+            document.getElementById('lock-3').checked
+        ];
 
-        const opt1 = document.getElementById('opt-1').value;
-        const opt2 = document.getElementById('opt-2').value;
-        const opt3 = document.getElementById('opt-3').value;
-
-        const rank1 = parseInt(document.getElementById('rank-1').value);
-        const rank2 = parseInt(document.getElementById('rank-2').value);
-        const rank3 = parseInt(document.getElementById('rank-3').value);
-
-        let lockCount = (lock1 ? 1 : 0) + (lock2 ? 1 : 0) + (lock3 ? 1 : 0);
-        let costPerRoll = lockCount === 0 ? 1 : lockCount + 1;
-
-        document.getElementById('res-lock-info').innerText = `1回につき ドングリ ${costPerRoll}個消費 (ロック${lockCount}個)`;
-
-        function getRankMultiplier(rankVal) {
-            if (rankVal === 8) return 0.4;
-            if (rankVal === 11) return 0.05;
-            if (rankVal === 15) return 1 / 300;
-            return 1.0;
-        }
-
-        const totalOptions = 9;
-        let prob = 1.0;
-
-        if (!lock1) {
-            let optProb = 1.0;
-            if (opt1 === 'none') optProb = 1 / (totalOptions + 1);
-            else if (opt1 !== 'any') optProb = 1 / totalOptions;
-            optProb *= getRankMultiplier(rank1);
-            prob *= optProb;
-        }
-
-        if (!lock2) {
-            let p2 = 0.5;
-            if (opt2 === 'none') {
-                p2 *= 1 / (totalOptions + 1);
-            } else if (opt2 !== 'any') {
-                p2 *= 1 / (totalOptions - 1);
+        // UI制御
+        for (let i = 1; i <= 3; i++) {
+            const isLocked = locks[i - 1];
+            document.getElementById(`opt-${i}`).disabled = isLocked;
+            document.getElementById(`rank-${i}`).disabled = isLocked;
+            const card = document.getElementById(`card-${i}`);
+            if (isLocked) {
+                card.style.opacity = '0.6';
+            } else {
+                card.style.opacity = '1.0';
             }
-            p2 *= getRankMultiplier(rank2);
-            prob *= p2;
         }
 
-        if (!lock3) {
-            let p3 = 0.3;
-            if (opt3 === 'none') {
-                p3 *= 1 / (totalOptions + 1);
-            } else if (opt3 !== 'any') {
-                p3 *= 1 / (totalOptions - 2);
+        // 消費ドングリ数の判定 (0ロック=1, 1ロック=2, 2ロック=3)
+        const lockedCount = locks.filter(Boolean).length;
+        if (lockedCount === 3) {
+            document.getElementById('res-prob').innerText = "---";
+            document.getElementById('res-trials').innerText = "---";
+            document.getElementById('res-acorns').innerText = "---";
+            document.getElementById('res-safe90').innerText = "---";
+            document.getElementById('res-lock-info').innerText = "全スロットがロックされています";
+            return;
+        }
+
+        const acornPerRoll = lockedCount === 0 ? 1 : (lockedCount === 1 ? 2 : 3);
+        document.getElementById('res-lock-info').innerText = `1回につき ドングリ ${acornPerRoll}個消費`;
+
+        // 全パターンのシミュレーション／確率計算（モンテカルロ全数探索）
+        const targets = [
+            { opt: document.getElementById('opt-1').value, rank: parseInt(document.getElementById('rank-1').value), locked: locks[0] },
+            { opt: document.getElementById('opt-2').value, rank: parseInt(document.getElementById('rank-2').value), locked: locks[1] },
+            { opt: document.getElementById('opt-3').value, rank: parseInt(document.getElementById('rank-3').value), locked: locks[2] }
+        ];
+
+        const slotRates = [1.0, 0.5, 0.3]; // 各段の付与率
+
+        // モンテカルロ全挙動（10万回計算による精密幾何確率）
+        const SIMULATIONS = 100000;
+        let successCount = 0;
+
+        const optKeys = Object.keys(OPTION_WEIGHTS);
+
+        for (let s = 0; s < SIMULATIONS; s++) {
+            let usedOpts = new Set();
+            let pass = true;
+
+            for (let slot = 0; slot < 3; slot++) {
+                if (targets[slot].locked) continue; // ロック中スロットは評価スキップ
+
+                const targetOpt = targets[slot].opt;
+                const targetRank = targets[slot].rank;
+
+                // スロットの付与判定
+                const isAppeared = Math.random() < slotRates[slot];
+
+                if (!isAppeared) {
+                    if (targetOpt !== 'any' && targetOpt !== 'none') {
+                        pass = false;
+                        break;
+                    }
+                    continue;
+                }
+
+                // オプションの重複除外抽選
+                let availableOpts = optKeys.filter(k => !usedOpts.has(k));
+                let totalW = availableOpts.reduce((sum, k) => sum + OPTION_WEIGHTS[k], 0);
+                
+                let rand = Math.random() * totalW;
+                let selectedOpt = null;
+                for (let k of availableOpts) {
+                    rand -= OPTION_WEIGHTS[k];
+                    if (rand <= 0) {
+                        selectedOpt = k;
+                        break;
+                    }
+                }
+                if (!selectedOpt) selectedOpt = availableOpts[availableOpts.length - 1];
+                usedOpts.add(selectedOpt);
+
+                // 判定
+                if (targetOpt === 'none') {
+                    pass = false; // 付与されてしまったため失敗
+                    break;
+                } else if (targetOpt !== 'any') {
+                    if (selectedOpt !== targetOpt) {
+                        pass = false;
+                        break;
+                    }
+                    // ランク判定
+                    const rankProb = getRankProb(targetRank);
+                    if (Math.random() > rankProb) {
+                        pass = false;
+                        break;
+                    }
+                }
             }
-            p3 *= getRankMultiplier(rank3);
-            prob *= p3;
+
+            if (pass) successCount++;
         }
 
-        if (prob <= 0) prob = 0.0000001;
+        const prob = successCount / SIMULATIONS;
 
-        let percentage = prob * 100;
-        let trials = prob > 0 ? Math.round(1 / prob) : 0;
-        let avgAcorns = Math.round(trials * costPerRoll);
-        let safe90Trials = Math.round(Math.log(1 - 0.90) / Math.log(1 - prob));
-        let safe90Acorns = safe90Trials * costPerRoll;
+        if (prob <= 0) {
+            document.getElementById('res-prob').innerText = "0.00%";
+            document.getElementById('res-trials').innerText = "∞ 回";
+            document.getElementById('res-acorns').innerText = "∞ 個";
+            document.getElementById('res-safe90').innerText = "∞ 個";
+            return;
+        }
 
-        document.getElementById('res-prob').innerText = percentage < 0.01 ? percentage.toFixed(4) + '%' : percentage.toFixed(2) + '%';
-        document.getElementById('res-trials').innerText = trials.toLocaleString() + ' 回';
-        document.getElementById('res-acorns').innerText = avgAcorns.toLocaleString() + ' 個';
-        document.getElementById('res-safe90').innerText = safe90Acorns.toLocaleString() + ' 個';
-        document.getElementById('res-safe-trials').innerText = `約 ${safe90Trials.toLocaleString()} 回分`;
+        const avgTrials = 1 / prob;
+        const avgAcorns = avgTrials * acornPerRoll;
+
+        // 累積確率90%達成に必要な回数: 1 - (1-p)^n >= 0.9 => n = log(0.1) / log(1-p)
+        const safe90Trials = Math.ceil(Math.log(0.1) / Math.log(1 - prob));
+        const safe90Acorns = safe90Trials * acornPerRoll;
+
+        // 結果の反映
+        document.getElementById('res-prob').innerText = (prob * 100).toFixed(2) + "%";
+        document.getElementById('res-trials').innerText = `約 ${avgTrials.toFixed(1)} 回`;
+        document.getElementById('res-acorns').innerText = `約 ${Math.round(avgAcorns)} 個`;
+        document.getElementById('res-safe90').innerText = `約 ${safe90Acorns} 個`;
+        document.getElementById('res-safe-trials').innerText = `約 ${safe90Trials} 回分`;
     }
 
+    // 初期計算
     updateCalc();
 </script>
 
