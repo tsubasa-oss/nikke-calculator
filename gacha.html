@@ -13,6 +13,7 @@
             --accent-yellow: #ffb700;
             --text-color: #e0e6ed;
             --text-dim: #8a99ad;
+            --danger-color: #ff4757;
             --pilgrim-color: #ff6b81;
         }
 
@@ -51,6 +52,13 @@
             margin-bottom: 24px;
         }
 
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
         .grid-2 {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -83,6 +91,15 @@
             color: var(--pilgrim-color);
         }
 
+        .lock-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--accent-yellow);
+        }
+
         .form-group {
             margin-bottom: 12px;
         }
@@ -104,24 +121,9 @@
             font-size: 0.9rem;
         }
 
-        /* 計算実行ボタンのスタイル */
-        .calc-btn {
-            width: 100%;
-            background-color: var(--accent-color);
-            color: #0b0f19;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s;
-            margin-top: 4px;
-        }
-
-        .calc-btn:hover {
-            background-color: #00c2cc;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .results-panel {
@@ -200,9 +202,32 @@
             background-color: rgba(255, 255, 255, 0.02);
         }
 
+        .calc-btn {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #0b0f19;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            margin-top: 4px;
+        }
+
+        .calc-btn:hover {
+            background-color: #00c2cc;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
         .footer {
             margin-top: 24px;
-            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             font-size: 0.85rem;
             color: var(--text-dim);
             padding-bottom: 10px;
@@ -219,204 +244,152 @@
             color: var(--accent-yellow);
             text-decoration: underline;
         }
+
+        .nav-btn {
+            background-color: #1e293b;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--accent-color);
+            color: #0b0f19;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
 
-    <h1>NIKKE ガチャ確率 ＆ 100連期待度まとめ</h1>
-    <div class="subtitle">一般PU（2%）とピルグリムPU（1%）の排出率・期待値比較</div>
+    <!-- ページ1: オバロシミュレーター -->
+    <div id="page-overload">
+        <h1>NIKKE オバロシミュレーター</h1>
+        <div class="subtitle">1〜3段目の個別条件指定・重複除外・ロック消費対応</div>
 
-    <div class="info-note">
-        <strong>基本仕様:</strong> 特殊募集のSSR全体確率は <strong>4%</strong>（R: 53% / SR: 43%）。<br>
-        1回引くごとに<strong>ゴールドマイレージチケット1枚</strong>獲得（200枚で対象PUと直接交換可能・持ち越し可）。
-    </div>
-
-    <!-- 一般PU vs ピルグリムPU 比較カード -->
-    <div class="grid-2">
-        <!-- 一般キャラPU -->
-        <div class="card" style="border-color: var(--accent-color);">
-            <div class="card-header">
-                <span class="card-title">一般キャラ 特殊募集 (PU 2.0%)</span>
-            </div>
-            <div class="res-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-                <div class="res-box">
-                    <div class="res-label">1回あたりのPU確率</div>
-                    <div class="res-value">2.00%</div>
-                    <div class="res-sub">すり抜け 2.00%</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">1体引く期待値</div>
-                    <div class="res-value">50 連</div>
-                    <div class="res-sub">90%安心ライン: 114連</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">100連で1体以上引ける確率</div>
-                    <div class="res-value">86.74%</div>
-                    <div class="res-sub">爆死率(0体): 13.26%</div>
-                </div>
-                <div class="res-box">
-                    <div class="res-label">100連での期待獲得数</div>
-                    <div class="res-value">2.00 体</div>
-                    <div class="res-sub">SSR全体期待値: 4.0体</div>
-                </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>100連の獲得結果</th>
-                        <th>発生確率</th>
-                        <th>累積確率 (以上)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>0体 (すり抜けのみ/爆死)</td><td>13.26%</td><td>100.00%</td></tr>
-                    <tr><td>1体 (無凸確保)</td><td>27.07%</td><td>86.74%</td></tr>
-                    <tr><td>2体 (1凸)</td><td>27.34%</td><td>59.67%</td></tr>
-                    <tr><td>3体以上 (2凸〜完凸)</td><td>32.33%</td><td>32.33%</td></tr>
-                </tbody>
-            </table>
+        <div class="info-note">
+            <strong>仕様要点:</strong> ロック0個=1消費 / ロック1個=2消費 / ロック2個=3消費。<br>
+            付与確率: 1段目 100% / 2段目 50% / 3段目 30%。他の枠で出たオプションは重複しません。
         </div>
 
-        <!-- ピルグリム・オーバースペックPU -->
-        <div class="card" style="border-color: var(--pilgrim-color);">
-            <div class="card-header">
-                <span class="card-title pilgrim">ピルグリム / OS募集 (PU 1.0%)</span>
-            </div>
-            <div class="res-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-                <div class="res-box">
-                    <div class="res-label">1回あたりのPU確率</div>
-                    <div class="res-value pilgrim">1.00%</div>
-                    <div class="res-sub">すり抜け 3.00%</div>
+        <div class="grid-3">
+            <!-- 1段目 -->
+            <div class="card" id="card-1">
+                <div class="card-header">
+                    <span class="card-title">1段目 (付与率 100%)</span>
+                    <label class="lock-checkbox">
+                        <input type="checkbox" id="lock-1" onchange="updateCalc()"> ロック中
+                    </label>
                 </div>
-                <div class="res-box">
-                    <div class="res-label">1体引く期待値</div>
-                    <div class="res-value pilgrim">100 連</div>
-                    <div class="res-sub">90%安心ライン: 230連</div>
+                <div class="form-group">
+                    <label>狙うオプション</label>
+                    <select id="opt-1" onchange="updateCalc()">
+                        <option value="any">指定なし (任意)</option>
+                        <option value="none">付与なし (空き)</option>
+                        <option value="atk">攻撃力増加 (10%)</option>
+                        <option value="ammo">最大装弾数増加 (12%)</option>
+                        <option value="element">有利コードダメージ増加 (10%)</option>
+                        <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                        <option value="crit_rate">クリティカル率増加 (10%)</option>
+                        <option value="charge_speed">チャージ速度増加 (12%)</option>
+                        <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                        <option value="hit">命中率増加 (12%)</option>
+                        <option value="def">防御力増加 (10%)</option>
+                    </select>
                 </div>
-                <div class="res-box">
-                    <div class="res-label">100連で1体以上引ける確率</div>
-                    <div class="res-value pilgrim">63.40%</div>
-                    <div class="res-sub">爆死率(0体): 36.60%</div>
+                <div class="form-group">
+                    <label>数値・ランク指定</label>
+                    <select id="rank-1" onchange="updateCalc()">
+                        <option value="1">ランク1以上 (全数値)</option>
+                        <option value="8">ランク8以上 (上級 40%)</option>
+                        <option value="11">ランク11以上 (特級 5%)</option>
+                        <option value="15">ランク15のみ (最高 0.33%)</option>
+                    </select>
                 </div>
-                <div class="res-box">
-                    <div class="res-label">100連での期待獲得数</div>
-                    <div class="res-value pilgrim">1.00 体</div>
-                    <div class="res-sub">SSR全体期待値: 4.0体</div>
+            </div>
+
+            <!-- 2段目 -->
+            <div class="card" id="card-2">
+                <div class="card-header">
+                    <span class="card-title">2段目 (付与率 50%)</span>
+                    <label class="lock-checkbox">
+                        <input type="checkbox" id="lock-2" onchange="updateCalc()"> ロック中
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>狙うオプション</label>
+                    <select id="opt-2" onchange="updateCalc()">
+                        <option value="any">指定なし (任意)</option>
+                        <option value="none">付与なし (空き)</option>
+                        <option value="atk">攻撃力増加 (10%)</option>
+                        <option value="ammo">最大装弾数増加 (12%)</option>
+                        <option value="element">有利コードダメージ増加 (10%)</option>
+                        <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                        <option value="crit_rate">クリティカル率増加 (10%)</option>
+                        <option value="charge_speed">チャージ速度増加 (12%)</option>
+                        <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                        <option value="hit">命中率増加 (12%)</option>
+                        <option value="def">防御力増加 (10%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>数値・ランク指定</label>
+                    <select id="rank-2" onchange="updateCalc()">
+                        <option value="1">ランク1以上 (全数値)</option>
+                        <option value="8">ランク8以上 (上級 40%)</option>
+                        <option value="11">ランク11以上 (特級 5%)</option>
+                        <option value="15">ランク15のみ (最高 0.33%)</option>
+                    </select>
                 </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>100連の獲得結果</th>
-                        <th>発生確率</th>
-                        <th>累積確率 (以上)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>0体 (すり抜けのみ/爆死)</td><td>36.60%</td><td>100.00%</td></tr>
-                    <tr><td>1体 (無凸確保)</td><td>36.97%</td><td>63.40%</td></tr>
-                    <tr><td>2体 (1凸)</td><td>18.49%</td><td>26.42%</td></tr>
-                    <tr><td>3体以上 (2凸〜完凸)</td><td>7.94%</td><td>7.94%</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
-    <!-- 任意の回数シミュレーター（ボタン実行式） -->
-    <div class="results-panel">
-        <div class="card-title" style="margin-bottom: 12px;">任意回数 期待度計算ツール</div>
-        <div class="grid-2" style="margin-bottom: 12px;">
-            <div class="form-group" style="margin-bottom: 0;">
-                <label>ガチャ種別 (PU排出率)</label>
-                <select id="gacha-rate">
-                    <option value="0.02">一般キャラ 特殊募集 (PU 2.0%)</option>
-                    <option value="0.01">ピルグリム / オーバースペック募集 (PU 1.0%)</option>
-                </select>
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label>回す回数 (連)</label>
-                <input type="number" id="gacha-pulls" value="100" min="1" max="2000">
-            </div>
-        </div>
-        <div style="margin-bottom: 16px;">
-            <button class="calc-btn" onclick="updateGachaCalc()">期待値を計算する</button>
-        </div>
-        <div class="res-grid">
-            <div class="res-box">
-                <div class="res-label">1体以上引ける確率</div>
-                <div class="res-value" id="gacha-res-1">86.74%</div>
-                <div class="res-sub" id="gacha-res-0">0体(爆死)率: 13.26%</div>
-            </div>
-            <div class="res-box">
-                <div class="res-label">2体以上引ける確率 (1凸〜)</div>
-                <div class="res-value" id="gacha-res-2">59.67%</div>
-                <div class="res-sub">素体＋1凸ライン</div>
-            </div>
-            <div class="res-box">
-                <div class="res-label">4体以上引ける確率 (3凸完凸)</div>
-                <div class="res-value" id="gacha-res-4">14.10%</div>
-                <div class="res-sub">ロビー壁紙ライン</div>
-            </div>
-            <div class="res-box">
-                <div class="res-label">期待獲得体数 ＆ マイレージ</div>
-                <div class="res-value" id="gacha-res-exp">2.00 体</div>
-                <div class="res-sub" id="gacha-res-mileage">金マイレージ +100枚</div>
+            <!-- 3段目 -->
+            <div class="card" id="card-3">
+                <div class="card-header">
+                    <span class="card-title">3段目 (付与率 30%)</span>
+                    <label class="lock-checkbox">
+                        <input type="checkbox" id="lock-3" onchange="updateCalc()"> ロック中
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>狙うオプション</label>
+                    <select id="opt-3" onchange="updateCalc()">
+                        <option value="any">指定なし (任意)</option>
+                        <option value="none">付与なし (空き)</option>
+                        <option value="atk">攻撃力増加 (10%)</option>
+                        <option value="ammo">最大装弾数増加 (12%)</option>
+                        <option value="element">有利コードダメージ増加 (10%)</option>
+                        <option value="crit_dmg">クリティカルダメージ増加 (12%)</option>
+                        <option value="crit_rate">クリティカル率増加 (10%)</option>
+                        <option value="charge_speed">チャージ速度増加 (12%)</option>
+                        <option value="charge_dmg">チャージダメージ増加 (12%)</option>
+                        <option value="hit">命中率増加 (12%)</option>
+                        <option value="def">防御力増加 (10%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>数値・ランク指定</label>
+                    <select id="rank-3" onchange="updateCalc()">
+                        <option value="1">ランク1以上 (全数値)</option>
+                        <option value="8">ランク8以上 (上級 40%)</option>
+                        <option value="11">ランク11以上 (特級 5%)</option>
+                        <option value="15">ランク15のみ (最高 0.33%)</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- フッター -->
-    <div class="footer">
-        作成者 X：<a href="https://x.com/tsubasa_nikke" target="_blank" rel="noopener noreferrer">@tsubasa_nikke</a>
-    </div>
-
-</div>
-
-<script>
-    function comb(n, k) {
-        if (k < 0 || k > n) return 0;
-        if (k === 0 || k === n) return 1;
-        if (k > n / 2) k = n - k;
-        let res = 1;
-        for (let i = 1; i <= k; i++) {
-            res = res * (n - i + 1) / i;
-        }
-        return res;
-    }
-
-    function binomProb(n, k, p) {
-        return comb(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
-    }
-
-    function updateGachaCalc() {
-        const p = parseFloat(document.getElementById('gacha-rate').value);
-        let n = parseInt(document.getElementById('gacha-pulls').value);
-        if (isNaN(n) || n < 1) n = 1;
-        if (n > 2000) n = 2000;
-
-        const p0 = Math.pow(1 - p, n);
-        const p1 = binomProb(n, 1, p);
-        const p2 = binomProb(n, 2, p);
-        const p3 = binomProb(n, 3, p);
-
-        const atLeast1 = Math.max(0, 1 - p0);
-        const atLeast2 = Math.max(0, 1 - (p0 + p1));
-        const atLeast4 = Math.max(0, 1 - (p0 + p1 + p2 + p3));
-        const expected = n * p;
-
-        document.getElementById('gacha-res-1').innerText = (atLeast1 * 100).toFixed(2) + "%";
-        document.getElementById('gacha-res-0').innerText = `0体(爆死)率: ${(p0 * 100).toFixed(2)}%`;
-        document.getElementById('gacha-res-2').innerText = (atLeast2 * 100).toFixed(2) + "%";
-        document.getElementById('gacha-res-4').innerText = (atLeast4 * 100).toFixed(2) + "%";
-        document.getElementById('gacha-res-exp').innerText = expected.toFixed(2) + " 体";
-        document.getElementById('gacha-res-mileage').innerText = `金マイレージ +${n}枚`;
-    }
-
-    // 初期読み込み時の計算実行
-    updateGachaCalc();
-</script>
-
-</body>
-</html>
+        <div class="results-panel">
